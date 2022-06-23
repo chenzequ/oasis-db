@@ -1,0 +1,19 @@
+spring:
+  #  datasource:
+  #    url: jdbc:h2:mem:db_test;database_to_upper=false
+  #    driver-class-name: org.h2.Driver
+  #    username:
+  #    password:
+  #    schema: classpath:sql/schema.sql
+  #    data: classpath:sql/data.sql
+  #  h2:
+  #    console:
+  #      enabled: true
+  #      path: /h2-console
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=GMT%2B8&characterEncoding=utf-8&tinyInt1isBit=true
+    username: root
+    password: 1234
+
