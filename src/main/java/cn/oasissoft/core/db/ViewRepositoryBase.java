@@ -1,5 +1,6 @@
 package cn.oasissoft.core.db;
 
+import cn.oasissoft.core.db.config.RepositoryConfigParams;
 import cn.oasissoft.core.db.entity.PageList;
 import cn.oasissoft.core.db.executor.group.GroupSqlExecutor;
 import cn.oasissoft.core.db.executor.query.QueryItemSqlExecutor;
@@ -20,23 +21,28 @@ import java.util.List;
  */
 public abstract class ViewRepositoryBase<T, K> extends EntityRepositoryBase<T, K> {
 
-    protected final QueryItemSqlExecutor<T, K> itemSE;
-    protected final QueryListSqlExecutor<T, K> listSE;
-    protected final QueryPageSqlExecutor<T, K> pageSE;
-    protected final QuerySingleSqlExecutor<T, K> singleSE;
-    protected final GroupSqlExecutor<T, K> groupSE;
+    protected QueryItemSqlExecutor<T, K> itemSE;
+    protected QueryListSqlExecutor<T, K> listSE;
+    protected QueryPageSqlExecutor<T, K> pageSE;
+    protected QuerySingleSqlExecutor<T, K> singleSE;
+    protected GroupSqlExecutor<T, K> groupSE;
 
-    protected ViewRepositoryBase(NamedParameterJdbcTemplate readJdbc, NamedParameterJdbcTemplate writeJdbc) {
-        super(readJdbc, writeJdbc);
+    protected ViewRepositoryBase(RepositoryConfigParams configParams) {
+        super(configParams);
+    }
+
+    public ViewRepositoryBase() {
+        this(null);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
         this.itemSE = new QueryItemSqlExecutor<>(this.getTableSchema(), this.getReadDbType(), this::queryForMap);
         this.listSE = new QueryListSqlExecutor<>(this.getTableSchema(), this.getReadDbType(), this::queryForList);
         this.pageSE = new QueryPageSqlExecutor<>(this.getTableSchema(), this.getReadDbType(), this::queryForList, this::querySingleResult);
         this.singleSE = new QuerySingleSqlExecutor<>(this.getTableSchema(), this.getReadDbType(), this::querySingleResult);
         this.groupSE = new GroupSqlExecutor<>(this.getTableSchema(), this.getReadDbType(), this::queryForList);
-    }
-
-    public ViewRepositoryBase(NamedParameterJdbcTemplate readJdbc) {
-        this(readJdbc, null);
     }
 
     /**

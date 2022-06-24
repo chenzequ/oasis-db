@@ -1,5 +1,6 @@
 package cn.oasissoft.core.db;
 
+import cn.oasissoft.core.db.config.RepositoryConfigParams;
 import cn.oasissoft.core.db.executor.write.DeleteSqlExecutor;
 import cn.oasissoft.core.db.executor.write.InsertSqlExecutor;
 import cn.oasissoft.core.db.executor.write.UpdateSqlExecutor;
@@ -14,20 +15,24 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  */
 public abstract class TableRepositoryBase<T, K> extends ViewRepositoryBase<T, K> {
 
-    protected final InsertSqlExecutor<T, K> insertSE;
-    protected final UpdateSqlExecutor<T, K> updateSE;
-    protected final DeleteSqlExecutor<T, K> deleteSE;
+    protected InsertSqlExecutor<T, K> insertSE;
+    protected UpdateSqlExecutor<T, K> updateSE;
+    protected DeleteSqlExecutor<T, K> deleteSE;
 
-    public TableRepositoryBase(NamedParameterJdbcTemplate readJdbc, NamedParameterJdbcTemplate writeJdbc) {
-        super(readJdbc, writeJdbc);
+    public TableRepositoryBase(RepositoryConfigParams configParams) {
+        super(configParams);
+    }
 
+    public TableRepositoryBase() {
+        this(null);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
         this.insertSE = new InsertSqlExecutor<>(this.getTableSchema(), this.getWriteDbType(), this::executeUpdate, this::executeBatchUpdate);
         this.updateSE = new UpdateSqlExecutor<>(this.getTableSchema(), this.getWriteDbType(), this::executeUpdate);
         this.deleteSE = new DeleteSqlExecutor<>(this.getTableSchema(), this.getWriteDbType(), this::executeUpdate);
-    }
-
-    public TableRepositoryBase(NamedParameterJdbcTemplate jdbcTemplate) {
-        this(jdbcTemplate, null);
     }
 
     /**

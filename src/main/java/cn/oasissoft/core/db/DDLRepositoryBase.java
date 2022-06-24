@@ -1,5 +1,6 @@
 package cn.oasissoft.core.db;
 
+import cn.oasissoft.core.db.config.RepositoryConfigParams;
 import cn.oasissoft.core.db.executor.ddl.ColumnDefinitionMap;
 import cn.oasissoft.core.db.executor.ddl.DDLSqlExecutor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,10 +14,18 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  */
 public abstract class DDLRepositoryBase<T, K> extends EntityRepositoryBase<T, K> {
 
-    protected final DDLSqlExecutor<T, K> ddlSE;
+    protected DDLSqlExecutor<T, K> ddlSE;
 
-    public DDLRepositoryBase(NamedParameterJdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
+    public DDLRepositoryBase(RepositoryConfigParams configParams) {
+        super(configParams);
+    }
+
+    public DDLRepositoryBase() {
+        this(null);
+    }
+
+    @Override
+    protected void init() {
         this.ddlSE = new DDLSqlExecutor<>(this.getTableSchema(), this.getReadDbType());
     }
 

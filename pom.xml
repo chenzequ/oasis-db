@@ -12,7 +12,7 @@
     <artifactId>oasis-db</artifactId>
     <name>oasis-db</name>
     <packaging>jar</packaging>
-    <version>2.0.0.beta</version>
+    <version>2.0.0beta</version>
     <description>数据操作模块</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

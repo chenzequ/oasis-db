@@ -1,9 +1,12 @@
 package cn.oasissoft.core.db;
 
+import cn.oasissoft.core.db.config.DebugRepositoryConfigParams;
+import cn.oasissoft.core.db.config.RepositoryConfigParams;
 import cn.oasissoft.core.db.entity.DatabaseType;
 import cn.oasissoft.core.db.ex.OasisJdbcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -11,6 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.util.Assert;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -27,48 +31,50 @@ import java.util.function.Supplier;
 public abstract class AbstractRepositoryBase {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final DatabaseType readDbType;
-    private final DatabaseType writeDbType;
-    public final NamedParameterJdbcTemplate readJdbc;
-    public final NamedParameterJdbcTemplate writeJdbc;
+    // 仓储配置参数
+    private RepositoryConfigParams configParams;
 
-    public AbstractRepositoryBase(NamedParameterJdbcTemplate readJdbc, NamedParameterJdbcTemplate writeJdbc) {
-        Assert.notNull(readJdbc, "readJdbc is null.");
-        this.readJdbc = readJdbc;
-        if (writeJdbc == null) {
-            this.writeJdbc = readJdbc;
-        } else {
-            this.writeJdbc = writeJdbc;
-        }
-        this.readDbType = DatabaseType.getDataBaseBy(this.readJdbc);
-        this.writeDbType = DatabaseType.getDataBaseBy(this.writeJdbc);
+    public AbstractRepositoryBase(RepositoryConfigParams configParams) {
+        this.configParams = configParams;
     }
 
-    public AbstractRepositoryBase(NamedParameterJdbcTemplate readJdbc) {
-        this(readJdbc, null);
-    }
-
-    protected DatabaseType getReadDbType() {
-        return this.readDbType;
-    }
-
-    protected DatabaseType getWriteDbType() {
-        return this.writeDbType;
+    public AbstractRepositoryBase() {
     }
 
     /**
-     * 是否处于debug模式
-     * PS: 下一个版本考虑把这个改成配置文件，这样就可以在配置文件中开启或关闭相关的输出功能
+     * 初始化仓储配置参数
      *
-     * @return
+     * @param configParams
      */
-    protected Boolean debug() {
-        return false;
+    @Autowired
+    protected void setConfigParams(RepositoryConfigParams configParams) {
+        if (this.configParams == null) {
+            this.configParams = configParams;
+        }
+    }
+
+    @PostConstruct
+    private void postConstruct() {
+        Assert.notNull(this.configParams, "configParams is null.");
+        this.init();
+    }
+
+    // 初始化
+    protected void init() {
+    }
+
+
+    protected DatabaseType getReadDbType() {
+        return this.configParams.getReadDbType();
+    }
+
+    protected DatabaseType getWriteDbType() {
+        return this.configParams.getWriteDbType();
     }
 
     // 抽象方法
     protected NamedParameterJdbcTemplate readJdbcTemplate() {
-        return this.readJdbc;
+        return this.configParams.getReadJdbc();
     }
 
     /**
@@ -77,8 +83,7 @@ public abstract class AbstractRepositoryBase {
      * @return
      */
     protected NamedParameterJdbcTemplate writeJdbcTemplate() {
-        // 默认读写的jdbc template相同
-        return this.writeJdbc;
+        return this.configParams.getWriteJdbc();
     }
 
     // 辅助方法
@@ -109,6 +114,7 @@ public abstract class AbstractRepositoryBase {
      * @param paramsArray 传入参数
      */
     protected void beforeExecute(String id, String sql, Map<String, Object>[] paramsArray) {
+        this.configParams.beforeSqlExecute(id, sql, paramsArray);
     }
 
     /**
@@ -120,24 +126,7 @@ public abstract class AbstractRepositoryBase {
      */
     protected void afterExecute(String id, String sql, Map<String, Object>[] paramsArray, Long diffTimes, Object result) {
         // 显示输入,转出结果
-        if (debug()) {
-            System.out.printf("DB EXE = ========== [%s] ========== \n", id);
-            System.out.printf("DB SQL = %s\n", sql);
-            if (paramsArray.length > 1) {
-                for (int i = 0; i < paramsArray.length; i++) {
-                    System.out.printf("DB >>> = [%s] %s\n", i, paramsArray[i]);
-//                for (Map.Entry<String, Object> entry : paramsArray[i].entrySet()) {
-//                    System.out.printf("DB >>> = [%s] KEY:[%s] = %s\n", i, entry.getKey(), entry.getValue());
-//                }
-                }
-            } else if (paramsArray.length == 1) {
-                System.out.printf("DB >>> = %s\n",paramsArray[0]);
-            }
-
-            System.out.printf("DB <<< = %s\n", result);
-            System.out.printf("DB $$$ = [%s]ms\n", diffTimes);
-            System.out.printf("DB OK. = ============================================================ \n");
-        }
+        this.configParams.afterSqlExecute(id, sql, paramsArray, diffTimes, result);
     }
 
     /**
@@ -147,18 +136,7 @@ public abstract class AbstractRepositoryBase {
      * @param e  异常
      */
     protected void executeException(String id, String sql, Map<String, Object>[] paramsArray, Exception e) {
-        if (debug()) {
-            System.out.printf("DB EXE = ========== [%s] ========== \n", id);
-            System.out.printf("DB SQL = %s\n", sql);
-            for (int i = 0; i < paramsArray.length; i++) {
-                System.out.printf("DB >>> = [%s] %s\n", i, paramsArray[i]);
-//                for (Map.Entry<String, Object> entry : paramsArray[i].entrySet()) {
-//                    System.out.printf("DB >>> = [%s] KEY:[%s] = %s\n", i, entry.getKey(), entry.getValue());
-//                }
-            }
-            System.out.printf("DB *** = [%s]\n", e.getMessage());
-            System.out.printf("DB FAI = ============================================================ \n");
-        }
+        this.configParams.sqlExecuteException(id, sql, paramsArray, e);
     }
 
     /** jdbc 访问调用 **/

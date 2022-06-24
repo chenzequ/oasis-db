@@ -1,6 +1,8 @@
 package db.mysql;
 
 import cn.oasissoft.core.db.TableRepositoryBase;
+import cn.oasissoft.core.db.config.RepositoryConfigParams;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -12,12 +14,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TestRepository extends TableRepositoryBase<TestInfo,Long> {
 
-    @Override
-    protected Boolean debug() {
-        return true;
-    }
+//    public TestRepository(RepositoryConfigParams configParams) {
+//        super(configParams);
+//    }
 
-    public TestRepository(NamedParameterJdbcTemplate readJdbc, NamedParameterJdbcTemplate writeJdbc) {
-        super(readJdbc, writeJdbc);
-    }
 }

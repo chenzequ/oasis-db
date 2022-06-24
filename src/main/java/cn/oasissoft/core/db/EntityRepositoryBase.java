@@ -1,5 +1,6 @@
 package cn.oasissoft.core.db;
 
+import cn.oasissoft.core.db.config.RepositoryConfigParams;
 import cn.oasissoft.core.db.entity.schema.DBTable;
 import cn.oasissoft.core.db.entity.schema.TableSchema;
 import cn.oasissoft.core.db.ex.OasisDbDefineException;
@@ -23,8 +24,8 @@ public abstract class EntityRepositoryBase<T, K> extends AbstractRepositoryBase 
     private final Class<T> entityClass; // 操作实体的类型
     private final TableSchema<T> tableSchema; // 表结构
 
-    protected EntityRepositoryBase(NamedParameterJdbcTemplate readJdbc, NamedParameterJdbcTemplate writeJdbc) {
-        super(readJdbc, writeJdbc);
+    protected EntityRepositoryBase(RepositoryConfigParams configParams) {
+        super(configParams);
         Type genericSuperclass = this.getClass().getGenericSuperclass();
         ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
         // 当前的仓储对象必须有两个泛型签名
@@ -44,14 +45,9 @@ public abstract class EntityRepositoryBase<T, K> extends AbstractRepositoryBase 
         logger.info("初始化[" + this.getClass() + "]对应的仓储对象 -> 完成");
     }
 
-    protected EntityRepositoryBase(NamedParameterJdbcTemplate readJdbc) {
-        this(readJdbc, null);
+    protected EntityRepositoryBase() {
+        this(null);
     }
-
-    protected Map<Class<? extends SqlExecutorBase>, SqlExecutorBase> getSqlExecutorMap() {
-        return null;
-    }
-
     /**
      * 获取当前表结构生成器（可改写）
      */

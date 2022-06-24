@@ -1,6 +1,7 @@
 package db.mysql;
 
 import cn.oasissoft.core.db.DDLRepositoryBase;
+import cn.oasissoft.core.db.config.RepositoryConfigParams;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class TestDDLRepository extends DDLRepositoryBase<TestInfo,Long> {
-
-    public TestDDLRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
+    public TestDDLRepository(RepositoryConfigParams configParams) {
+        super(configParams);
     }
+
 }

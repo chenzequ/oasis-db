@@ -27,6 +27,10 @@
 >   + Max 最大值
 >   + Min 最小值
 
+##### RepositoryConfigParam 仓储配置参数
+
+> + 在 `AbstractRepositoryBase`中，可以使用构造函数注入，或者属性注入，注入参数
+
 ##### 表名机制
 > + 正常表名 -> \`表名\`
 > + 分表表名 -> \`表名_x`\
