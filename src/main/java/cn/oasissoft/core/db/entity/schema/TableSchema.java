@@ -423,7 +423,7 @@ public class TableSchema<T> {
      */
     public static <K> TableSchema<K> renderTableSchema(Class<K> kClass) {
         DBTable dbTable = kClass.getAnnotation(DBTable.class);
-        String tableName = kClass.getName();
+        String tableName = kClass.getSimpleName();
         ShardingTable shardingTable = null;
         ColumnNameConverter converter = null;
         if (dbTable != null) {

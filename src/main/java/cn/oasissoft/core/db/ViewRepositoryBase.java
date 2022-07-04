@@ -89,5 +89,14 @@ public abstract class ViewRepositoryBase<T, K> extends EntityRepositoryBase<T, K
         return pageSE.toPageModels(query, size, index);
     }
 
+    /**
+     * 判断条件的数据是否存在
+     *
+     * @param query
+     * @return
+     */
+    public Boolean exists(DbQuery query) {
+        return singleSE.count(query) > 0;
+    }
 }
 

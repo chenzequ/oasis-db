@@ -32,7 +32,6 @@ import java.util.function.Function;
  */
 public class DDLSqlExecutor<T, K> extends SqlExecutorBase {
 
-
     public DDLSqlExecutor(TableSchema tableSchema, DatabaseType databaseType) {
         super(tableSchema, databaseType);
     }
@@ -78,29 +77,29 @@ public class DDLSqlExecutor<T, K> extends SqlExecutorBase {
                 }
             }));
         } else if (Boolean.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "bit(1)" + infoStr, infoStr, len -> "bit(1)"));
+            sql.append(getColumnText(columnDefinition, "bit(1)" + infoStr, infoStr, len -> "bit(1)"));
         } else if (Byte.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "tinyint" + infoStr, infoStr, len -> "tinyint"));
+            sql.append(getColumnText(columnDefinition, "tinyint" + infoStr, infoStr, len -> "tinyint"));
         } else if (Short.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "smallint" + infoStr, infoStr, len -> "smallint"));
+            sql.append(getColumnText(columnDefinition, "smallint" + infoStr, infoStr, len -> "smallint"));
         } else if (Integer.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "int" + infoStr, infoStr, len -> "int"));
+            sql.append(getColumnText(columnDefinition, "int" + infoStr, infoStr, len -> "int"));
         } else if (Long.class.equals(type) || BigInteger.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "bigint" + infoStr, infoStr, len -> "bigint"));
+            sql.append(getColumnText(columnDefinition, "bigint" + infoStr, infoStr, len -> "bigint"));
         } else if (Float.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "float" + infoStr, infoStr, len -> "float"));
+            sql.append(getColumnText(columnDefinition, "float" + infoStr, infoStr, len -> "float"));
         } else if (Double.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "double" + infoStr, infoStr, len -> "double"));
+            sql.append(getColumnText(columnDefinition, "double" + infoStr, infoStr, len -> "double"));
         } else if (BigDecimal.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "decimal" + infoStr, infoStr, len -> "decimal"));
+            sql.append(getColumnText(columnDefinition, "decimal" + infoStr, infoStr, len -> "decimal"));
         } else if (Date.class.equals(type) || LocalDateTime.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "datetime" + infoStr, infoStr, len -> "datetime"));
+            sql.append(getColumnText(columnDefinition, "datetime" + infoStr, infoStr, len -> "datetime"));
         } else if (LocalDate.class.equals(type)) {
-            sql.append(getColumnText( columnDefinition, "date" + infoStr, infoStr, len -> "date"));
+            sql.append(getColumnText(columnDefinition, "date" + infoStr, infoStr, len -> "date"));
         } else if (LocalTime.class.equals(type)) {
             sql.append(getColumnText(columnDefinition, "time " + infoStr, infoStr, len -> "time"));
         } else if (((Class) type).isEnum()) {
-            sql.append(getColumnText( columnDefinition, "int" + infoStr, infoStr, len -> "int"));
+            sql.append(getColumnText(columnDefinition, "int" + infoStr, infoStr, len -> "int"));
         } else {
             throw new OasisDbDefineException("未知的属性类型:" + column.getProperty());
         }
@@ -115,6 +114,9 @@ public class DDLSqlExecutor<T, K> extends SqlExecutorBase {
 
         StringBuilder sql = new StringBuilder(256);
 
+        sql.append("-- -----------------------------").append(System.lineSeparator());
+        sql.append("-- table: ").append(this.tableSchema.getTableNameSql(tableName)).append(System.lineSeparator());
+        sql.append("-- -----------------------------").append(System.lineSeparator());
         sql.append("DROP TABLE IF EXISTS ").append(this.tableSchema.getTableNameSql(tableName)).append(";").append(System.lineSeparator());
 
         sql.append("CREATE TABLE").append(this.tableSchema.getTableNameSql(tableName)).append("(");
@@ -221,7 +223,7 @@ public class DDLSqlExecutor<T, K> extends SqlExecutorBase {
     }
 
     public String renderTableSql(ColumnDefinitionMap columnDefinitionMap, String endSql) {
-        return renderTableSql( null, columnDefinitionMap, endSql);
+        return renderTableSql(null, columnDefinitionMap, endSql);
     }
 
 }

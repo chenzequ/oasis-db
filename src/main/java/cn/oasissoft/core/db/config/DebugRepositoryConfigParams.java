@@ -1,5 +1,6 @@
 package cn.oasissoft.core.db.config;
 
+import cn.oasissoft.core.db.entity.DatabaseType;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.Map;
@@ -11,7 +12,12 @@ import java.util.Map;
  * @desc
  * @time 2022/06/24 15:09
  */
-public class DebugRepositoryConfigParams extends RepositoryConfigParams{
+public class DebugRepositoryConfigParams extends RepositoryConfigParams {
+
+    protected DebugRepositoryConfigParams(DatabaseType dbType) {
+        super(dbType);
+    }
+
     public DebugRepositoryConfigParams(NamedParameterJdbcTemplate jdbc) {
         super(jdbc);
     }

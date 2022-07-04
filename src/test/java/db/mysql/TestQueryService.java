@@ -51,4 +51,11 @@ public class TestQueryService {
         DbQuery query = DbQuery.builderAnd(TestInfo::getIntValue).greatThanEq(200004).build();
         testRepository.queryList(query);
     }
+
+    @Test
+    public void test_query5(){
+        DbQuery query = DbQuery.builderAnd(TestInfo::getIntValue).greatThanEq(20008).build();
+        Boolean exists = testRepository.exists(query);
+        System.out.println(exists);
+    }
 }

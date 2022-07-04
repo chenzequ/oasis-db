@@ -20,6 +20,14 @@ public class RepositoryConfigParams {
     private final DatabaseType readDbType;
     private final DatabaseType writeDbType;
 
+    protected RepositoryConfigParams(DatabaseType dbType) {
+        // 用于参数输出，而不需要执行实际参数
+        this.readJdbc = null;
+        this.writeJdbc = null;
+        this.readDbType = dbType;
+        this.writeDbType = dbType;
+    }
+
     public RepositoryConfigParams(NamedParameterJdbcTemplate jdbc) {
         this(jdbc, null);
     }

@@ -8,10 +8,14 @@ import cn.oasissoft.core.db.executor.SqlExecutorBase;
 import cn.oasissoft.core.db.executor.function.ExecuteUpdateFunction;
 import cn.oasissoft.core.db.query.DbOperandOperator;
 import cn.oasissoft.core.db.query.DbQuery;
+import cn.oasissoft.core.db.query.LambdaFunction;
+import cn.oasissoft.core.db.utils.LambdaUtils;
 import org.springframework.util.Assert;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Quinn
@@ -30,12 +34,24 @@ public class UpdateSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
 
 
     public int by(T model) {
-        return this.by(model, null);
+        return this.by(model, (Set<String>) null);
     }
 
     public int by(T model, Set<String> exceptProps) {
         String tableName = this.tableSchema.getTableNameSql();
         return WriteSqlExecutorUtils.update(tableName, this.tableSchema, this.databaseType, this.executeUpdate, model, exceptProps);
+    }
+
+    public int by(T model, LambdaFunction<T>... exceptProps) {
+        if (exceptProps == null || exceptProps.length == 0) {
+            return by(model);
+        } else {
+            Set<String> props = new HashSet<>(exceptProps.length);
+            for (LambdaFunction<T> lambdaFunction : exceptProps) {
+                props.add(LambdaUtils.getPropertyName(lambdaFunction));
+            }
+            return by(model, props);
+        }
     }
 
     public int updates(DbQuery query, UpdateObject<T>... updateObjects) {

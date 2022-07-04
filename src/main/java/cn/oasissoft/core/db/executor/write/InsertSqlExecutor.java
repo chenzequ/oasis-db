@@ -5,8 +5,11 @@ import cn.oasissoft.core.db.entity.schema.TableSchema;
 import cn.oasissoft.core.db.executor.SqlExecutorBase;
 import cn.oasissoft.core.db.executor.function.ExecuteBatchUpdateFunction;
 import cn.oasissoft.core.db.executor.function.ExecuteUpdateAutoIncrementFunction;
+import cn.oasissoft.core.db.query.LambdaFunction;
+import cn.oasissoft.core.db.utils.LambdaUtils;
 import org.springframework.util.Assert;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +42,7 @@ public class InsertSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
      * @return
      */
     public int by(T model) {
-        return this.by(model, null);
+        return this.by(model, (Set<String>) null);
     }
 
     /**
@@ -53,6 +56,19 @@ public class InsertSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         String tableName = this.tableSchema.getTableNameSql();
         return WriteSqlExecutorUtils.insert(tableName, tableSchema, databaseType, executeUpdateAutoIncrement, model, exceptProps);
     }
+
+    public int by(T model, LambdaFunction<T>... exceptProps) {
+        if (exceptProps == null || exceptProps.length == 0) {
+            return by(model);
+        } else {
+            Set<String> props = new HashSet<>(exceptProps.length);
+            for (LambdaFunction<T> lambdaFunction : exceptProps) {
+                props.add(LambdaUtils.getPropertyName(lambdaFunction));
+            }
+            return by(model, exceptProps);
+        }
+    }
+
 
     /**
      * 批量保存

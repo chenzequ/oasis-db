@@ -33,8 +33,11 @@ public abstract class EntityRepositoryBase<T, K> extends AbstractRepositoryBase 
             throw new OasisDbDefineException(String.format("仓储 [%s] 必须有两个泛型参数.", this.getClass()));
         }
         // 实体类型
-        this.entityClass = (Class<T>) parameterizedType.getActualTypeArguments()[0];
-        // 主键类型
+        Type actualTypeArgument = parameterizedType.getActualTypeArguments()[0];
+        if (!(actualTypeArgument instanceof Class)) {
+            throw new OasisDbDefineException(String.format("泛型的第一个参数类型[%s]不是实体类型!", actualTypeArgument.getTypeName()));
+        }
+        this.entityClass = (Class<T>) actualTypeArgument;
         Type pkType = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
         Assert.notNull(entityClass, String.format("[%s]  entity class is null", this.getClass()));
         Assert.notNull(pkType, String.format("[%s]  primary key class is null", this.getClass()));
@@ -48,6 +51,21 @@ public abstract class EntityRepositoryBase<T, K> extends AbstractRepositoryBase 
     protected EntityRepositoryBase() {
         this(null);
     }
+
+    // 不使用依赖注入
+    protected EntityRepositoryBase(RepositoryConfigParams repositoryConfigParams, Class<T> entityClass) {
+        // 主键类型
+        super(repositoryConfigParams);
+        Assert.notNull(entityClass, "entityClass is null.");
+//        Assert.notNull(idClass, "idClass is null.");
+        this.entityClass = entityClass;
+        this.tableSchema = getTableSchema();
+//        this.tableSchema.checkPrimaryKeyType(idClass);
+//        logger.info("初始化[" + this.getClass() + "]对应的仓储对象 -> 完成\n");
+        //
+        init();
+    }
+
     /**
      * 获取当前表结构生成器（可改写）
      */

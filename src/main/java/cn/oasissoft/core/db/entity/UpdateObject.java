@@ -27,8 +27,12 @@ public class UpdateObject<T> {
         this(prop, null);
     }
 
+    public UpdateObject(LambdaFunction<T> lambdaFunction, Object value) {
+        this(LambdaUtils.getPropertyName(lambdaFunction), value);
+    }
+
     public UpdateObject(LambdaFunction<T> lambdaFunction) {
-        this(LambdaUtils.getPropertyName(lambdaFunction));
+        this(lambdaFunction, null);
     }
 
     public String getProp() {
