@@ -55,7 +55,11 @@ public class QueryPageSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
      * @return
      */
     public <V> PageList<V> toPageViews(Class<V> vClass, DbQuery query, int size, int index) {
-        return QuerySqlExecutorUtils.queryPageViews(vClass, this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.queryForList, this.querySingleResult, query, size, index);
+        return this.toPageViews(vClass, null, query, size, index);
+    }
+
+    public <V> PageList<V> toPageViews(Class<V> vClass, Set<String> exceptProps, DbQuery query, int size, int index) {
+        return QuerySqlExecutorUtils.queryPageViews(vClass, exceptProps, this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.queryForList, this.querySingleResult, query, size, index);
     }
 
     /**

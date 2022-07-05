@@ -5,7 +5,9 @@ import cn.oasissoft.core.db.query.LambdaFunction;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Lambda 辅助类
@@ -58,4 +60,13 @@ public class LambdaUtils {
         }
         return name;
     }
+
+    public static <T> Set<String> getPropertyNames(LambdaFunction<T>... functions) {
+        Set<String> set = new HashSet<>(functions.length);
+        for (LambdaFunction<T> function : functions) {
+            set.add(getPropertyName(function));
+        }
+        return set;
+    }
+
 }

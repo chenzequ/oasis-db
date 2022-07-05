@@ -32,7 +32,6 @@ public class UpdateSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         this.executeUpdate = executeUpdate;
     }
 
-
     public int by(T model) {
         return this.by(model, (Set<String>) null);
     }

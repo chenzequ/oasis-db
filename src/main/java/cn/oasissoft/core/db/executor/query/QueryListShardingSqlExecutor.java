@@ -37,12 +37,20 @@ public class QueryListShardingSqlExecutor<T, K> extends ShardingSqlExecutorBase<
     }
 
     public <V> List<V> toViews(Class<V> vClass, ShardingKeys keys, DbQuery query) {
-        return toViews(vClass, keys, query, -1, 1);
+        return toViews(vClass, null, keys, query);
+    }
+
+    public <V> List<V> toViews(Class<V> vClass, Set<String> exceptProps, ShardingKeys keys, DbQuery query) {
+        return toViews(vClass, exceptProps, keys, query, -1, 1);
     }
 
     public <V> List<V> toViews(Class<V> vClass, ShardingKeys keys, DbQuery query, int size, int index) {
+        return toViews(vClass, null, keys, query, size, index);
+    }
+
+    public <V> List<V> toViews(Class<V> vClass, Set<String> exceptProps, ShardingKeys keys, DbQuery query, int size, int index) {
         String tableName = this.tableNameSqlByShardingKeys(keys);
-        return QuerySqlExecutorUtils.queryViews(vClass, tableName, this.tableSchema, this.databaseType, this.queryForList, query, size, index);
+        return QuerySqlExecutorUtils.queryViews(vClass, exceptProps, tableName, this.tableSchema, this.databaseType, this.queryForList, query, size, index);
     }
 
     public List<MapEntity> toMaps(Set<String> props, ShardingKeys keys, DbQuery query) {

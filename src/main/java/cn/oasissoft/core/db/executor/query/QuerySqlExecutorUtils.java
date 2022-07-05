@@ -31,6 +31,18 @@ import java.util.Set;
  */
 final class QuerySqlExecutorUtils {
 
+    private static <V> Map<String, Field> getViewFields(Class<V> vClass, Set<String> exceptProps) {
+        Map<String, Field> fieldMap = DbReflectUtils.getAllPrivateFieldsMap(vClass);
+        // 如果设置了除非属性，则这些属性不加入到返回值对象中，该值将填充为空值
+        if (exceptProps != null) {
+            for (String prop : exceptProps) {
+                if (fieldMap.containsKey(prop)) {
+                    fieldMap.remove(prop);
+                }
+            }
+        }
+        return fieldMap;
+    }
     // item
 
     private static <T, K> Map<String, Object> queryItemById(String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForMapFunction queryForMap, Set<String> props, K id, boolean forUpdate) {
@@ -109,14 +121,14 @@ final class QuerySqlExecutorUtils {
         return dbMap == null ? null : schema.loadModelByColumnName(dbMap);
     }
 
-    public static <T, K, V> V queryView(Class<V> vClass, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForMapFunction queryForMap, K id, boolean forUpdate) {
-        Map<String, Field> fieldMap = DbReflectUtils.getAllPrivateFieldsMap(vClass);
+    public static <T, K, V> V queryView(Class<V> vClass, Set<String> exceptProps, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForMapFunction queryForMap, K id, boolean forUpdate) {
+        Map<String, Field> fieldMap = getViewFields(vClass, exceptProps);
         Map<String, Object> dbMap = queryItemById(tableNameSql, schema, dbType, queryForMap, fieldMap.keySet(), id, forUpdate);
         return dbMap == null ? null : schema.convertDbMapToEntity(vClass, fieldMap, dbMap);
     }
 
-    public static <T, K, V> V queryView(Class<V> vClass, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForMapFunction queryForMap, DbQuery query, boolean forUpdate) {
-        Map<String, Field> fieldMap = DbReflectUtils.getAllPrivateFieldsMap(vClass);
+    public static <T, K, V> V queryView(Class<V> vClass, Set<String> exceptProps, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForMapFunction queryForMap, DbQuery query, boolean forUpdate) {
+        Map<String, Field> fieldMap = getViewFields(vClass, exceptProps);
         Map<String, Object> dbMap = queryItemById(tableNameSql, schema, dbType, queryForMap, fieldMap.keySet(), query, forUpdate);
         return dbMap == null ? null : schema.convertDbMapToEntity(vClass, fieldMap, dbMap);
     }
@@ -183,12 +195,13 @@ final class QuerySqlExecutorUtils {
         return queryModels(tableNameSql, schema, dbType, queryForList, query, -1, 1);
     }
 
-    public static <T, K, V> List<V> queryViews(Class<V> vClass, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForListFunction queryForList, DbQuery query, int size, int index) {
+    public static <T, K, V> List<V> queryViews(Class<V> vClass, Set<String> exceptProps, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForListFunction queryForList, DbQuery query, int size, int index) {
         List<V> result = new ArrayList<>();
         if (null != query && query.isNotReturnData()) {
             return result;
         }
-        Map<String, Field> fieldMap = DbReflectUtils.getAllPrivateFieldsMap(vClass);
+        Map<String, Field> fieldMap = getViewFields(vClass, exceptProps);
+
         List<Map<String, Object>> dbMaps = queryList(tableNameSql, schema, dbType, queryForList, fieldMap.keySet(), query, size, index);
         for (Map<String, Object> dbMap : dbMaps) {
             result.add(schema.convertDbMapToEntity(vClass, fieldMap, dbMap));
@@ -197,7 +210,7 @@ final class QuerySqlExecutorUtils {
     }
 
     public static <T, K, V> List<V> queryViews(Class<V> vClass, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForListFunction queryForList, DbQuery query) {
-        return queryViews(vClass, tableNameSql, schema, dbType, queryForList, query, -1, 1);
+        return queryViews(vClass, null, tableNameSql, schema, dbType, queryForList, query, -1, 1);
     }
 
     public static <T, K> List<MapEntity> queryMaps(Set<String> props, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForListFunction queryForList, DbQuery query, int size, int index) {
@@ -230,6 +243,10 @@ final class QuerySqlExecutorUtils {
     }
 
     public static <T, K, V> PageList<V> queryPageViews(Class<V> vClass, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForListFunction queryForList, QuerySingleResultFunction querySingleResult, DbQuery query, int size, int index) {
+        return queryPageViews(vClass, null, tableNameSql, schema, dbType, queryForList, querySingleResult, query, size, index);
+    }
+
+    public static <T, K, V> PageList<V> queryPageViews(Class<V> vClass, Set<String> exceptProps, String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QueryForListFunction queryForList, QuerySingleResultFunction querySingleResult, DbQuery query, int size, int index) {
         if (null != query && query.isNotReturnData()) {
             return new PageList<>(new ArrayList<>(0), 0);
         }
@@ -237,7 +254,7 @@ final class QuerySqlExecutorUtils {
         if (total == 0L) {
             return new PageList<>(new ArrayList<>(0), 0);
         }
-        List<V> models = queryViews(vClass, tableNameSql, schema, dbType, queryForList, query, size, index);
+        List<V> models = queryViews(vClass, exceptProps, tableNameSql, schema, dbType, queryForList, query, size, index);
         return new PageList<>(models, total);
     }
 

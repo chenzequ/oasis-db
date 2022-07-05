@@ -57,8 +57,23 @@ public class QueryPageShardingSqlExecutor<T, K> extends ShardingSqlExecutorBase<
      * @return
      */
     public <V> PageList<V> toPageViews(Class<V> vClass, ShardingKeys keys, DbQuery query, int size, int index) {
+        return this.toPageViews(vClass, null, keys, query, size, index);
+    }
+
+    /**
+     * 根据 查询条件 分页查询 视图集合
+     *
+     * @param vClass
+     * @param exceptProps 视图模版中除外的属性
+     * @param query
+     * @param size
+     * @param index
+     * @param <V>
+     * @return
+     */
+    public <V> PageList<V> toPageViews(Class<V> vClass, Set<String> exceptProps, ShardingKeys keys, DbQuery query, int size, int index) {
         String tableName = tableNameSqlByShardingKeys(keys);
-        return QuerySqlExecutorUtils.queryPageViews(vClass, tableName, this.tableSchema, this.databaseType, this.queryForList, this.querySingleResult, query, size, index);
+        return QuerySqlExecutorUtils.queryPageViews(vClass, exceptProps, tableName, this.tableSchema, this.databaseType, this.queryForList, this.querySingleResult, query, size, index);
     }
 
     /**

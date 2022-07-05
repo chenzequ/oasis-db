@@ -85,7 +85,11 @@ public class QueryItemShardingSqlExecutor<T, K> extends ShardingSqlExecutorBase<
      * @return
      */
     public <V> V toView(Class<V> vClass, K id) {
-        return this.toView(vClass, id, false);
+        return this.toView(vClass, null, id);
+    }
+
+    public <V> V toView(Class<V> vClass, Set<String> exceptProps, K id) {
+        return this.toView(vClass, exceptProps, id, false);
     }
 
     /**
@@ -98,8 +102,12 @@ public class QueryItemShardingSqlExecutor<T, K> extends ShardingSqlExecutorBase<
      * @return
      */
     public <V> V toView(Class<V> vClass, K id, boolean forUpdate) {
+        return this.toView(vClass, null, id, forUpdate);
+    }
+
+    public <V> V toView(Class<V> vClass, Set<String> exceptProps, K id, boolean forUpdate) {
         String tableName = this.tableNameSqlById(id);
-        return QuerySqlExecutorUtils.queryView(vClass, tableName, this.tableSchema, this.databaseType, this.queryForMap, id, forUpdate);
+        return QuerySqlExecutorUtils.queryView(vClass, exceptProps, tableName, this.tableSchema, this.databaseType, this.queryForMap, id, forUpdate);
     }
 
     /**
@@ -111,7 +119,7 @@ public class QueryItemShardingSqlExecutor<T, K> extends ShardingSqlExecutorBase<
      * @return
      */
     public <V> V toView(Class<V> vClass, ShardingKey shardingKey, DbQuery query) {
-        return this.toView(vClass, shardingKey, query, false);
+        return this.toView(vClass, null, shardingKey, query, false);
     }
 
     /**
@@ -123,9 +131,9 @@ public class QueryItemShardingSqlExecutor<T, K> extends ShardingSqlExecutorBase<
      * @param <V>
      * @return
      */
-    public <V> V toView(Class<V> vClass, ShardingKey shardingKey, DbQuery query, boolean forUpdate) {
+    public <V> V toView(Class<V> vClass, Set<String> exceptProps, ShardingKey shardingKey, DbQuery query, boolean forUpdate) {
         String tableName = this.tableNameSqlByShardingKey(shardingKey);
-        return QuerySqlExecutorUtils.queryView(vClass, tableName, this.tableSchema, this.databaseType, this.queryForMap, query, forUpdate);
+        return QuerySqlExecutorUtils.queryView(vClass, exceptProps, tableName, this.tableSchema, this.databaseType, this.queryForMap, query, forUpdate);
     }
 
     // 查询Map对象

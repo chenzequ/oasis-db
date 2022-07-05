@@ -35,11 +35,19 @@ public class QueryListSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
     }
 
     public <V> List<V> toViews(Class<V> vClass, DbQuery query) {
-        return toViews(vClass, query, -1, 1);
+        return toViews(vClass, null, query, -1, 1);
+    }
+
+    public <V> List<V> toViews(Class<V> vClass, Set<String> exceptProps, DbQuery query) {
+        return toViews(vClass, exceptProps, query, -1, 1);
     }
 
     public <V> List<V> toViews(Class<V> vClass, DbQuery query, int size, int index) {
-        return QuerySqlExecutorUtils.queryViews(vClass, this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.queryForList, query, size, index);
+        return toViews(vClass, null, query, size, index);
+    }
+
+    public <V> List<V> toViews(Class<V> vClass, Set<String> exceptProps, DbQuery query, int size, int index) {
+        return QuerySqlExecutorUtils.queryViews(vClass, exceptProps, this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.queryForList, query, size, index);
     }
 
     public List<MapEntity> toMaps(Set<String> props, DbQuery query) {

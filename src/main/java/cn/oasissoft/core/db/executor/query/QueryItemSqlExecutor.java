@@ -137,7 +137,15 @@ public class QueryItemSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
      * @return
      */
     public <V> V toView(Class<V> vClass, K id) {
-        return this.toView(vClass, id, false);
+        return this.toView(vClass, null, id);
+    }
+
+    public <V> V toView(Class<V> vClass, Set<String> exceptProps, K id) {
+        return this.toView(vClass, exceptProps, id, false);
+    }
+
+    public <V> V toView(Class<V> vClass, K id, boolean forUpdate) {
+        return this.toView(vClass, null, id, forUpdate);
     }
 
     /**
@@ -149,8 +157,8 @@ public class QueryItemSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
      * @param <V>
      * @return
      */
-    public <V> V toView(Class<V> vClass, K id, boolean forUpdate) {
-        return QuerySqlExecutorUtils.queryView(vClass, this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.queryForMap, id, forUpdate);
+    public <V> V toView(Class<V> vClass, Set<String> exceptProps, K id, boolean forUpdate) {
+        return QuerySqlExecutorUtils.queryView(vClass, exceptProps, this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.queryForMap, id, forUpdate);
     }
 
     /**
@@ -162,7 +170,11 @@ public class QueryItemSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
      * @return
      */
     public <V> V toView(Class<V> vClass, DbQuery query) {
-        return this.toView(vClass, query, false);
+        return this.toView(vClass, null, query);
+    }
+
+    public <V> V toView(Class<V> vClass, Set<String> exceptProps, DbQuery query) {
+        return this.toView(vClass, exceptProps, query, false);
     }
 
     /**
@@ -175,7 +187,11 @@ public class QueryItemSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
      * @return
      */
     public <V> V toView(Class<V> vClass, DbQuery query, boolean forUpdate) {
-        return QuerySqlExecutorUtils.queryView(vClass, this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.queryForMap, query, forUpdate);
+        return this.toView(vClass, null, query, forUpdate);
+    }
+
+    public <V> V toView(Class<V> vClass, Set<String> exceptProps, DbQuery query, boolean forUpdate) {
+        return QuerySqlExecutorUtils.queryView(vClass, exceptProps, this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.queryForMap, query, forUpdate);
     }
 
     // 查询Map对象
