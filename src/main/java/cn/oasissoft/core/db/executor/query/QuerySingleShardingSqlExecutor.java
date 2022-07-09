@@ -7,6 +7,8 @@ import cn.oasissoft.core.db.entity.schema.TableSchema;
 import cn.oasissoft.core.db.executor.ShardingSqlExecutorBase;
 import cn.oasissoft.core.db.executor.function.QuerySingleResultFunction;
 import cn.oasissoft.core.db.query.DbQuery;
+import cn.oasissoft.core.db.query.LambdaFunction;
+import cn.oasissoft.core.db.utils.LambdaUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -34,9 +36,13 @@ public class QuerySingleShardingSqlExecutor<T, K> extends ShardingSqlExecutorBas
      * @param propertyOrSql
      * @return
      */
-    public <V> Object singleResultBy(ShardingKeys<V> ShardingKeys, DbQuery query, AggregateOperator op, String propertyOrSql) {
-        String tableName = this.tableNameSqlByShardingKeys(ShardingKeys);
+    public <V> Object singleResultBy(ShardingKeys<V> shardingKeys, DbQuery query, AggregateOperator op, String propertyOrSql) {
+        String tableName = this.tableNameSqlByShardingKeys(shardingKeys);
         return QuerySqlExecutorUtils.querySingleResult(tableName, this.tableSchema, this.databaseType, this.querySingleResult, query, op, propertyOrSql);
+    }
+
+    public <V> Object singleResultBy(ShardingKeys<V> shardingKeys, DbQuery query, AggregateOperator op, LambdaFunction<T> lambdaFunction) {
+        return this.singleResultBy(shardingKeys, query, op, LambdaUtils.getPropertyName(lambdaFunction));
     }
 
     /**
@@ -46,12 +52,16 @@ public class QuerySingleShardingSqlExecutor<T, K> extends ShardingSqlExecutorBas
      * @param propertySql
      * @return
      */
-    public <V> Long count(ShardingKeys<V> ShardingKeys,DbQuery query, String propertySql) {
-        return (Long) this.singleResultBy(ShardingKeys,query, AggregateOperator.Count, propertySql);
+    public <V> Long count(ShardingKeys<V> shardingKeys, DbQuery query, String propertySql) {
+        return (Long) this.singleResultBy(shardingKeys, query, AggregateOperator.Count, propertySql);
     }
 
-    public <V> Long count(ShardingKeys<V> ShardingKeys, DbQuery query) {
-        return this.count(ShardingKeys,query, null);
+    public <V> Long count(ShardingKeys<V> shardingKeys, DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.count(shardingKeys, query, LambdaUtils.getPropertyName(lambdaFunction));
+    }
+
+    public <V> Long count(ShardingKeys<V> shardingKeys, DbQuery query) {
+        return this.count(shardingKeys, query, (String) null);
     }
 
     /**
@@ -61,8 +71,12 @@ public class QuerySingleShardingSqlExecutor<T, K> extends ShardingSqlExecutorBas
      * @param propertySql
      * @return
      */
-    public <V> Object single(ShardingKeys<V> ShardingKeys, DbQuery query, String propertySql) {
-        return this.singleResultBy(ShardingKeys,query, AggregateOperator.Single, propertySql);
+    public <V> Object single(ShardingKeys<V> shardingKeys, DbQuery query, String propertySql) {
+        return this.singleResultBy(shardingKeys, query, AggregateOperator.Single, propertySql);
+    }
+
+    public <V> Object single(ShardingKeys<V> shardingKeys, DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.single(shardingKeys, query, LambdaUtils.getPropertyName(lambdaFunction));
     }
 
     /**
@@ -72,8 +86,12 @@ public class QuerySingleShardingSqlExecutor<T, K> extends ShardingSqlExecutorBas
      * @param propertySql
      * @return
      */
-    public <V> Object avg(ShardingKeys<V> ShardingKeys, DbQuery query, String propertySql) {
-        return this.singleResultBy(ShardingKeys,query, AggregateOperator.Avg, propertySql);
+    public <V> Object avg(ShardingKeys<V> shardingKeys, DbQuery query, String propertySql) {
+        return this.singleResultBy(shardingKeys, query, AggregateOperator.Avg, propertySql);
+    }
+
+    public <V> Object avg(ShardingKeys<V> shardingKeys, DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.avg(shardingKeys, query, LambdaUtils.getPropertyName(lambdaFunction));
     }
 
     /**
@@ -83,15 +101,27 @@ public class QuerySingleShardingSqlExecutor<T, K> extends ShardingSqlExecutorBas
      * @param propertySql
      * @return
      */
-    public <V> Object sum(ShardingKeys<V> ShardingKeys, DbQuery query, String propertySql) {
-        return this.singleResultBy(ShardingKeys,query, AggregateOperator.Sum, propertySql);
+    public <V> Object sum(ShardingKeys<V> shardingKeys, DbQuery query, String propertySql) {
+        return this.singleResultBy(shardingKeys, query, AggregateOperator.Sum, propertySql);
     }
 
-    public <V> Object max(ShardingKeys<V> ShardingKeys, DbQuery query, String propertySql) {
-        return this.singleResultBy(ShardingKeys,query, AggregateOperator.Max, propertySql);
+    public <V> Object sum(ShardingKeys<V> shardingKeys, DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.sum(shardingKeys, query, LambdaUtils.getPropertyName(lambdaFunction));
     }
 
-    public <V> Object min(ShardingKeys<V> ShardingKeys, DbQuery query, String propertySql) {
-        return this.singleResultBy(ShardingKeys,query, AggregateOperator.Min, propertySql);
+    public <V> Object max(ShardingKeys<V> shardingKeys, DbQuery query, String propertySql) {
+        return this.singleResultBy(shardingKeys, query, AggregateOperator.Max, propertySql);
+    }
+
+    public <V> Object max(ShardingKeys<V> shardingKeys, DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.max(shardingKeys, query, LambdaUtils.getPropertyName(lambdaFunction));
+    }
+
+    public <V> Object min(ShardingKeys<V> shardingKeys, DbQuery query, String propertySql) {
+        return this.singleResultBy(shardingKeys, query, AggregateOperator.Min, propertySql);
+    }
+
+    public <V> Object min(ShardingKeys<V> shardingKeys, DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.min(shardingKeys, query, LambdaUtils.getPropertyName(lambdaFunction));
     }
 }

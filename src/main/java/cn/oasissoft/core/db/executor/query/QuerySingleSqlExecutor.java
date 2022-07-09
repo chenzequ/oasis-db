@@ -6,6 +6,8 @@ import cn.oasissoft.core.db.entity.schema.TableSchema;
 import cn.oasissoft.core.db.executor.SqlExecutorBase;
 import cn.oasissoft.core.db.executor.function.QuerySingleResultFunction;
 import cn.oasissoft.core.db.query.DbQuery;
+import cn.oasissoft.core.db.query.LambdaFunction;
+import cn.oasissoft.core.db.utils.LambdaUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -37,6 +39,10 @@ public class QuerySingleSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return QuerySqlExecutorUtils.querySingleResult(this.tableSchema.getTableNameSql(), this.tableSchema, this.databaseType, this.querySingleResult, query, op, propertyOrSql);
     }
 
+    public Object singleResultBy(DbQuery query, AggregateOperator op, LambdaFunction<T> lambdaFunction) {
+        return singleResultBy(query, op, LambdaUtils.getPropertyName(lambdaFunction));
+    }
+
     /**
      * 统计数量
      *
@@ -48,8 +54,12 @@ public class QuerySingleSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return (Long) this.singleResultBy(query, AggregateOperator.Count, propertySql);
     }
 
+    public Long count(DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.count(query, LambdaUtils.getPropertyName(lambdaFunction));
+    }
+
     public Long count(DbQuery query) {
-        return this.count(query, null);
+        return this.count(query, (String) null);
     }
 
     /**
@@ -63,6 +73,10 @@ public class QuerySingleSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return this.singleResultBy(query, AggregateOperator.Single, propertySql);
     }
 
+    public Object single(DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.single(query, LambdaUtils.getPropertyName(lambdaFunction));
+    }
+
     /**
      * 统计平均值
      *
@@ -72,6 +86,10 @@ public class QuerySingleSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
      */
     public Object avg(DbQuery query, String propertySql) {
         return this.singleResultBy(query, AggregateOperator.Avg, propertySql);
+    }
+
+    public Object avg(DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.avg(query, LambdaUtils.getPropertyName(lambdaFunction));
     }
 
     /**
@@ -85,11 +103,23 @@ public class QuerySingleSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return this.singleResultBy(query, AggregateOperator.Sum, propertySql);
     }
 
+    public Object sum(DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.sum(query, LambdaUtils.getPropertyName(lambdaFunction));
+    }
+
     public Object max(DbQuery query, String propertySql) {
         return this.singleResultBy(query, AggregateOperator.Max, propertySql);
     }
 
+    public Object max(DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.max(query, LambdaUtils.getPropertyName(lambdaFunction));
+    }
+
     public Object min(DbQuery query, String propertySql) {
         return this.singleResultBy(query, AggregateOperator.Min, propertySql);
+    }
+
+    public Object min(DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.min(query, LambdaUtils.getPropertyName(lambdaFunction));
     }
 }
