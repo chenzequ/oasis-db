@@ -68,6 +68,7 @@ public final class DbReflectUtils {
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static void setValue(Field field, Object target, Object propertyValue) {
+        field.setAccessible(true);
         try {
             if (propertyValue != null) {
                 Type type = field.getType();
@@ -99,7 +100,7 @@ public final class DbReflectUtils {
                     } else {
                         throw new OasisDbException(String.format("value [%s]-[%s] convert to Date error.", propertyValue, propertyValue.getClass()));
                     }
-                } else if (((Class)type).isEnum()) {
+                } else if (((Class) type).isEnum()) {
                     field.set(target, ((Class) type).getEnumConstants()[(int) propertyValue]);
                 } else {
                     field.set(target, propertyValue);
