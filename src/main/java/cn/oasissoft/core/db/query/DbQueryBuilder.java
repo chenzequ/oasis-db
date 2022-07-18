@@ -276,10 +276,18 @@ public class DbQueryBuilder {
             orderItems = new ArrayList<>();
         }
 
+        public InnerItemBuilder and(LambdaFunction<?> lambda) {
+            return this.and(LambdaUtils.getPropertyName(lambda));
+        }
+
         public InnerItemBuilder and(String prop) {
             InnerItemBuilder builder = new InnerItemBuilder(prop, DbLoginOperator.And, this);
             items.add(builder);
             return builder;
+        }
+
+        public InnerItemBuilder or(LambdaFunction<?> lambda) {
+            return this.or(LambdaUtils.getPropertyName(lambda));
         }
 
         public InnerItemBuilder or(String prop) {
@@ -310,6 +318,14 @@ public class DbQueryBuilder {
             InnerSqlItem2Builder builder = new InnerSqlItem2Builder(DbLoginOperator.Or, this);
             items.add(builder);
             return builder;
+        }
+
+        public InnerBuilder orderAsc(LambdaFunction<?> lambda) {
+            return this.orderAsc(LambdaUtils.getPropertyName(lambda));
+        }
+
+        public InnerBuilder orderDesc(LambdaFunction<?> lambda) {
+            return this.orderDesc(LambdaUtils.getPropertyName(lambda));
         }
 
         public InnerBuilder orderAsc(String prop) {
