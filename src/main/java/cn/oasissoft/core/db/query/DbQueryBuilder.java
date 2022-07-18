@@ -276,7 +276,7 @@ public class DbQueryBuilder {
             orderItems = new ArrayList<>();
         }
 
-        public InnerItemBuilder and(LambdaFunction<?> lambda) {
+        public <T> InnerItemBuilder and(LambdaFunction<T> lambda) {
             return this.and(LambdaUtils.getPropertyName(lambda));
         }
 
@@ -286,7 +286,7 @@ public class DbQueryBuilder {
             return builder;
         }
 
-        public InnerItemBuilder or(LambdaFunction<?> lambda) {
+        public <T> InnerItemBuilder or(LambdaFunction<T> lambda) {
             return this.or(LambdaUtils.getPropertyName(lambda));
         }
 
@@ -320,11 +320,11 @@ public class DbQueryBuilder {
             return builder;
         }
 
-        public InnerBuilder orderAsc(LambdaFunction<?> lambda) {
+        public <T> InnerBuilder orderAsc(LambdaFunction<T> lambda) {
             return this.orderAsc(LambdaUtils.getPropertyName(lambda));
         }
 
-        public InnerBuilder orderDesc(LambdaFunction<?> lambda) {
+        public <T> InnerBuilder orderDesc(LambdaFunction<T> lambda) {
             return this.orderDesc(LambdaUtils.getPropertyName(lambda));
         }
 
