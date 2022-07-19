@@ -4,6 +4,7 @@ import cn.oasissoft.core.db.entity.DatabaseType;
 import cn.oasissoft.core.db.entity.MapEntity;
 import cn.oasissoft.core.db.entity.PageList;
 import cn.oasissoft.core.db.entity.aggregate.AggregateOperator;
+import cn.oasissoft.core.db.entity.schema.ColumnSchema;
 import cn.oasissoft.core.db.entity.schema.TableSchema;
 import cn.oasissoft.core.db.ex.OasisDbException;
 import cn.oasissoft.core.db.executor.function.QueryForListFunction;
@@ -272,11 +273,21 @@ final class QuerySqlExecutorUtils {
 
 
     // Single Result
-    public static <T, K> Object querySingleResult(String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QuerySingleResultFunction querySingleResult, DbQuery query, AggregateOperator op, String columnSql) {
+    public static <T, K> Object querySingleResult(String tableNameSql, TableSchema<T> schema, DatabaseType dbType, QuerySingleResultFunction querySingleResult, DbQuery query, AggregateOperator op, String propertyOrSql) {
         if (null != query && query.isNotReturnData()) {
             return op.equals(AggregateOperator.Single) ? null : 0L;
         }
-        columnSql = StringUtils.hasText(columnSql) ? columnSql : "*";
+        String columnSql;
+        if (StringUtils.hasText(propertyOrSql)) {
+            ColumnSchema column = schema.getColumnByProperty(propertyOrSql);
+            if (column != null) {
+                columnSql = column.getColumnNameSql();
+            } else {
+                columnSql = propertyOrSql;
+            }
+        } else {
+            columnSql = "*";
+        }
         Map<String, Object> params = new HashMap<>();
         String whereSql = DbQueryUtils.getWhereSql(dbType, schema, query, params);
         String opSql = AggregateOperator.getOpSql(op);
