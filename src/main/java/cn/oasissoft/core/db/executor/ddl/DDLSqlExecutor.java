@@ -100,6 +100,8 @@ public class DDLSqlExecutor<T, K> extends SqlExecutorBase {
             sql.append(getColumnText(columnDefinition, "time " + infoStr, infoStr, len -> "time"));
         } else if (((Class) type).isEnum()) {
             sql.append(getColumnText(columnDefinition, "int" + infoStr, infoStr, len -> "int"));
+        } else if(column.isJson()){
+            sql.append(getColumnText(columnDefinition, "json" + infoStr, infoStr, len -> "json"));
         } else {
             throw new OasisDbDefineException("未知的属性类型:" + column.getProperty());
         }
