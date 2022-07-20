@@ -166,6 +166,7 @@ public class TableSchema<T> {
 
     /**
      * 获取主键生成策略
+     *
      * @return
      */
     public PrimaryKeyStrategy getPrimaryKeyStrategy() {
@@ -174,19 +175,22 @@ public class TableSchema<T> {
 
     /**
      * 是否是主增主键
+     *
      * @return
      */
-    public boolean isAutoIncrement(){
+    public boolean isAutoIncrement() {
         return this.pkColumns.length == 1 && this.primaryKeyStrategy == PrimaryKeyStrategy.AutoIncrement;
     }
 
     /**
      * 获取当前表的全部列
+     *
      * @return
      */
     public ColumnSchema[] getColumns() {
         return columns;
     }
+
     /**
      * 通过列名获取对应的列
      *
@@ -375,9 +379,9 @@ public class TableSchema<T> {
                 // 自定义返回格式
                 Function<Object, Object> setValue = setValueMap.get(column.getProperty());
                 Object value = setValue.apply(entry.getValue());
-                DbReflectUtils.setValue(fieldMap.get(column.getProperty()), entity, value);
+                DbReflectUtils.setValue(fieldMap.get(column.getProperty()), entity, value, column.isJson());
             } else {
-                DbReflectUtils.setValue(fieldMap.get(column.getProperty()), entity, entry.getValue());
+                DbReflectUtils.setValue(fieldMap.get(column.getProperty()), entity, entry.getValue(), column.isJson());
             }
         }
         return entity;
@@ -529,16 +533,16 @@ public class TableSchema<T> {
         try {
             entity = vClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            throw new OasisDbException(String.format("创建对象[%s]失败.",vClass.getName()));
+            throw new OasisDbException(String.format("创建对象[%s]失败.", vClass.getName()));
         }
 
         for (Map.Entry<String, Object> entry : dbMap.entrySet()) {
             ColumnSchema column = getColumnByColumnName(entry.getKey());
             if (null != setValueMap && setValueMap.containsKey(column.getProperty())) {
                 // 自定义返回格式
-                DbReflectUtils.setValue(fieldMap.get(column.getProperty()), entity, setValueMap.get(column.getProperty()).apply(entry.getValue()));
+                DbReflectUtils.setValue(fieldMap.get(column.getProperty()), entity, setValueMap.get(column.getProperty()).apply(entry.getValue()), column.isJson());
             } else {
-                DbReflectUtils.setValue(fieldMap.get(column.getProperty()), entity, entry.getValue());
+                DbReflectUtils.setValue(fieldMap.get(column.getProperty()), entity, entry.getValue(), column.isJson());
             }
 
         }
@@ -583,6 +587,7 @@ public class TableSchema<T> {
 
     /**
      * 生成id参数
+     *
      * @param id
      * @return
      */
@@ -594,7 +599,7 @@ public class TableSchema<T> {
             for (int i = 0; i < idValues.length; i++) {
                 params.put(this.getPrimaryKeys()[i].getColumnName(), idValues[i]);
             }
-        }else{
+        } else {
             params.put(this.getFirstPrimaryKey().getColumnName(), id);
         }
         return params;
@@ -602,6 +607,7 @@ public class TableSchema<T> {
 
     /**
      * 生成id查询条件
+     *
      * @param dbType
      * @return
      */
@@ -615,11 +621,13 @@ public class TableSchema<T> {
         }
         return sb.toString();
     }
+
     /**
      * 获取分表表名策略
+     *
      * @return
      */
-    public ShardingTable getShardingTable(){
+    public ShardingTable getShardingTable() {
         return this.shardingTable;
     }
 }

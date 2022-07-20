@@ -67,12 +67,15 @@ public final class DbReflectUtils {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static void setValue(Field field, Object target, Object propertyValue) {
+    public static void setValue(Field field, Object target, Object propertyValue, boolean isJson) {
         field.setAccessible(true);
         try {
             if (propertyValue != null) {
-                Type type = field.getType();
-                if (LocalDateTime.class.equals(type)) {
+                Class<?> type = field.getType();
+                if (isJson) {
+                    // PS:数据库json字段专用, 将数据库的字符串转成对应的类型对象
+                    field.set(target, JsonUtils.fromJson(propertyValue.toString(), type));
+                } else if (LocalDateTime.class.equals(type)) {
                     if (propertyValue.getClass().equals(LocalDateTime.class)) {
                         field.set(target, propertyValue);
                     } else if (Timestamp.class.equals(propertyValue.getClass())) {
@@ -100,8 +103,8 @@ public final class DbReflectUtils {
                     } else {
                         throw new OasisDbException(String.format("value [%s]-[%s] convert to Date error.", propertyValue, propertyValue.getClass()));
                     }
-                } else if (((Class) type).isEnum()) {
-                    field.set(target, ((Class) type).getEnumConstants()[(int) propertyValue]);
+                } else if (type.isEnum()) {
+                    field.set(target, type.getEnumConstants()[(int) propertyValue]);
                 } else {
                     field.set(target, propertyValue);
                 }
@@ -113,13 +116,16 @@ public final class DbReflectUtils {
         }
     }
 
-    public static Object getValue(Field field, Object target) {
+    public static Object getValue(Field field, Object target, boolean isJson) {
         try {
             Object value = field.get(target);
             if (value == null) {
                 return null;
             }
-            if (field.getType().isEnum()) {
+            if (isJson) {
+                // PS:数据库json字段专用, 将传入的对象转成字符串保存
+                return JsonUtils.toJson(value);
+            } else if (field.getType().isEnum()) {
                 Enum enumValue = (Enum) value;
                 return enumValue.ordinal();
             } else {
