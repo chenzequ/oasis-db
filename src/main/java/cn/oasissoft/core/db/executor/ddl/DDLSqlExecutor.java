@@ -30,9 +30,9 @@ import java.util.function.Function;
  * @desc
  * @time 2022/06/19 16:24
  */
-public class DDLSqlExecutor<T, K> extends SqlExecutorBase {
+public class DDLSqlExecutor<T, K> extends SqlExecutorBase<T,K> {
 
-    public DDLSqlExecutor(TableSchema tableSchema, DatabaseType databaseType) {
+    public DDLSqlExecutor(TableSchema<T> tableSchema, DatabaseType databaseType) {
         super(tableSchema, databaseType);
     }
 

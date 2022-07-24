@@ -1,5 +1,7 @@
 package cn.oasissoft.core.db.query;
 
+import cn.oasissoft.core.db.utils.LambdaUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,5 +110,18 @@ public class DbSubQuery {
     public DbSubQuery add(DbCriterion criterion) {
         criteria.add(criterion);
         return this;
+    }
+
+    public <T> DbSubQuery add(LambdaFunction<T> getProperty, Object value) {
+        return this.add(getProperty, value, DbCriterionOperator.Equal);
+    }
+
+    public <T> DbSubQuery add(LambdaFunction<T> getProperty, Object value, DbCriterionOperator criterionOperator) {
+        return this.add(getProperty, value, criterionOperator, DbLoginOperator.And);
+    }
+
+    public <T> DbSubQuery add(LambdaFunction<T> getProperty, Object value, DbCriterionOperator criterionOperator, DbLoginOperator loginOperator) {
+        String prop = LambdaUtils.getPropertyName(getProperty);
+        return this.add(prop, value, criterionOperator, loginOperator);
     }
 }
