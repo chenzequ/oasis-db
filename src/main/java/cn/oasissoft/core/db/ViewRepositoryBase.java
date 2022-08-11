@@ -8,7 +8,6 @@ import cn.oasissoft.core.db.executor.query.QueryListSqlExecutor;
 import cn.oasissoft.core.db.executor.query.QueryPageSqlExecutor;
 import cn.oasissoft.core.db.executor.query.QuerySingleSqlExecutor;
 import cn.oasissoft.core.db.query.DbQuery;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.List;
 

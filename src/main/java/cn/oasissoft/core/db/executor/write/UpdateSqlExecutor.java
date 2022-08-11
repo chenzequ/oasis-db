@@ -73,22 +73,38 @@ public class UpdateSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return WriteSqlExecutorUtils.updates(tableName, this.tableSchema, this.databaseType, executeUpdate, ids, updateObjects);
     }
 
-    public int updatesNumber(DbQuery query, String property, DbOperandOperator op, Number value, UpdateObject<T>[] updateObjects) {
+    public int updatesNumber(DbQuery query, String property, DbOperandOperator op, Number value, UpdateObject<T>... updateObjects) {
         String tableName = this.tableSchema.getTableNameSql();
         return WriteSqlExecutorUtils.updatesNumber(tableName, this.tableSchema, this.databaseType, this.executeUpdate, query, property, op, value, updateObjects);
+    }
+
+    public int updatesNumber(DbQuery query, LambdaFunction<T> lambdaFunction, DbOperandOperator op, Number value, UpdateObject<T>... updateObjects) {
+        return this.updatesNumber(query, LambdaUtils.getPropertyName(lambdaFunction), op, value, updateObjects);
     }
 
     public int updatesNumber(DbQuery query, String property, DbOperandOperator op, Number value) {
         return this.updatesNumber(query, property, op, value, null);
     }
 
-    public int updatesNumber(List<K> ids, String property, DbOperandOperator op, Number value, UpdateObject<T>[] updateObjects) {
+    public int updatesNumber(DbQuery query, LambdaFunction<T> lambdaFunction, DbOperandOperator op, Number value) {
+        return this.updatesNumber(query, lambdaFunction, op, value, null);
+    }
+
+    public int updatesNumber(List<K> ids, String property, DbOperandOperator op, Number value, UpdateObject<T>... updateObjects) {
         String tableName = this.tableSchema.getTableNameSql();
         return WriteSqlExecutorUtils.updatesNumber(tableName, this.tableSchema, this.databaseType, this.executeUpdate, ids, property, op, value, updateObjects);
     }
 
+    public int updatesNumber(List<K> ids, LambdaFunction<T> lambdaFunction, DbOperandOperator op, Number value, UpdateObject<T>... updateObjects) {
+        return this.updatesNumber(ids, LambdaUtils.getPropertyName(lambdaFunction), op, value, updateObjects);
+    }
+
     public int updatesNumber(List<K> ids, String property, DbOperandOperator op, Number value) {
         return this.updatesNumber(ids, property, op, value, null);
+    }
+
+    public int updatesNumber(List<K> ids, LambdaFunction<T> lambdaFunction, DbOperandOperator op, Number value) {
+        return this.updatesNumber(ids, lambdaFunction, op, value, null);
     }
 
     public int updatesReplace(DbQuery query, String property, String oldValue, String newValue) {
@@ -96,9 +112,17 @@ public class UpdateSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return WriteSqlExecutorUtils.updatesReplace(tableName, this.tableSchema, this.databaseType, this.executeUpdate, query, property, oldValue, newValue);
     }
 
+    public int updatesReplace(DbQuery query, LambdaFunction<T> lambdaFunction, String oldValue, String newValue) {
+        return this.updatesReplace(query, LambdaUtils.getPropertyName(lambdaFunction), oldValue, newValue);
+    }
+
     public int updatesReplace(List<K> ids, String property, String oldValue, String newValue) {
         String tableName = this.tableSchema.getTableNameSql();
         return WriteSqlExecutorUtils.updatesReplace(tableName, this.tableSchema, this.databaseType, this.executeUpdate, ids, property, oldValue, newValue);
+    }
+
+    public int updatesReplace(List<K> ids, LambdaFunction<T> lambdaFunction, String oldValue, String newValue) {
+        return this.updatesReplace(ids, LambdaUtils.getPropertyName(lambdaFunction), oldValue, newValue);
     }
 
     public int updatesFlip(DbQuery query, String property) {
@@ -106,9 +130,17 @@ public class UpdateSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return WriteSqlExecutorUtils.updatesValueFlip(tableName, this.tableSchema, this.databaseType, this.executeUpdate, query, property);
     }
 
+    public int updatesFlip(DbQuery query, LambdaFunction<T> lambdaFunction) {
+        return this.updatesFlip(query, LambdaUtils.getPropertyName(lambdaFunction));
+    }
+
     public int updatesFlip(List<K> ids, String property) {
         String tableName = this.tableSchema.getTableNameSql();
         return WriteSqlExecutorUtils.updatesValueFlip(tableName, this.tableSchema, this.databaseType, this.executeUpdate, ids, property);
+    }
+
+    public int updatesFlip(List<K> ids, LambdaFunction<T> lambdaFunction) {
+        return this.updatesFlip(ids, LambdaUtils.getPropertyName(lambdaFunction));
     }
 }
 

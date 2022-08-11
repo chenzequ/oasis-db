@@ -65,7 +65,7 @@ public class InsertSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
             for (LambdaFunction<T> lambdaFunction : exceptProps) {
                 props.add(LambdaUtils.getPropertyName(lambdaFunction));
             }
-            return by(model, exceptProps);
+            return by(model, props);
         }
     }
 
@@ -82,6 +82,18 @@ public class InsertSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return WriteSqlExecutorUtils.batchInsert(tableName, this.tableSchema, this.databaseType, executeBatchUpdate, models, exceptProps);
     }
 
+    public int[] batchSave(List<T> models, LambdaFunction<T>... exceptProps) {
+        if (exceptProps == null || exceptProps.length == 0) {
+            return batchSave(models, (Set<String>) null);
+        } else {
+            Set<String> props = new HashSet<>(exceptProps.length);
+            for (LambdaFunction<T> lambdaFunction : exceptProps) {
+                props.add(LambdaUtils.getPropertyName(lambdaFunction));
+            }
+            return batchSave(models, props);
+        }
+    }
+
     /**
      * 批量保存
      *
@@ -89,7 +101,7 @@ public class InsertSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
      * @return
      */
     public int[] batchSave(List<T> model) {
-        return this.batchSave(model, null);
+        return this.batchSave(model, (Set<String>) null);
     }
 
 //    /**

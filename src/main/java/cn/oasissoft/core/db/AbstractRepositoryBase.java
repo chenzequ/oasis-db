@@ -1,6 +1,5 @@
 package cn.oasissoft.core.db;
 
-import cn.oasissoft.core.db.config.DebugRepositoryConfigParams;
 import cn.oasissoft.core.db.config.RepositoryConfigParams;
 import cn.oasissoft.core.db.entity.DatabaseType;
 import cn.oasissoft.core.db.ex.OasisJdbcException;

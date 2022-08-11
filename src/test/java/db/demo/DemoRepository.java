@@ -1,47 +1,42 @@
-# Oasis DB 访问器
+package db.demo;
 
-## 功能
+import cn.oasissoft.core.db.TableRepositoryBase;
+import cn.oasissoft.core.db.entity.UpdateObject;
+import cn.oasissoft.core.db.entity.UpdateSqlObject;
+import cn.oasissoft.core.db.entity.schema.DBTable;
+import cn.oasissoft.core.db.entity.schema.DBTableId;
+import cn.oasissoft.core.db.entity.schema.PrimaryKeyStrategy;
+import cn.oasissoft.core.db.query.DbOperandOperator;
+import cn.oasissoft.core.db.query.DbQuery;
+import cn.oasissoft.core.db.query.DbQueryBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-### 已支持的功能
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-#### repository - 单表仓储(核心)
+/**
+ * 演示仓储(单表)
+ *
+ * @author Quinn
+ * @desc
+ * @time 2022/8/11
+ */
+public class DemoRepository extends TableRepositoryBase<Demo, Long> {
 
-##### RepositoryBase
-> 所有仓储的基类,提供与jdbc操作的核心方法
-> 
-> + 每个sql jdbc 操作的钩子(执行前，执行后，执行异常)
-> + 支持 Read,Write 分离。并且提供每个sql执行方法独立的 jdbc template
-> + 提供统一修改执行sql传入参数的方法,已内置了 LocalDateTime去除纳秒时间的处理
+    /*** 操作 ****/
 
-##### 基础Repository功能
-
-> + 查询单个数据，传入id|query，返回 Model,MapEntity,View 三种 , 可for update 锁定数据
-> + 查询多行数据 传入 query , 返回指定数量|全部 的 Model|MapEntity|View
-> + 分页查询多行数据 传入 page参数 query , 返回 Model|MapEntity|View
-> 
-> + 查询单个结果
->   + Single 单个单元格
->   + Count 数量
->   + Sum 合计
->   + Avg 平均值
->   + Max 最大值
->   + Min 最小值
-
-##### RepositoryConfigParam 仓储配置参数
-
-> + 在 `AbstractRepositoryBase`中，可以使用构造函数注入，或者属性注入，注入参数
-
-##### 表名机制
-> + 正常表名 -> \`表名\`
-> + 分表表名 -> \`表名_x`\
-> + 联合表名 -> SELECT * FROM \`表_0\` UNION SELECT * FROM \`表_1\`
-> + 多表联合 -> \`表A\` as A LEFT JOIN \`表B\` as B
-### 待开发功能
-
-
-## 组件代码演示
-```java
-// 添加
+    public void doUpdate() {
+        Demo demo = new Demo(0L, "name", true, "memo", LocalDateTime.now(), 1);
+        int updates = 0;
+        List<Demo> list = new ArrayList<>();
+        list.add(demo);
+        List<Long> ids = new ArrayList<>();
+        ids.add(1L);
+        ids.add(2L);
+        DbQuery updateQuery = DbQueryBuilder.and(Demo::getEnabled).eq(true).build();
+        // 添加
         // PS1: SnowId 与 AutoIncrement 会自动生成，并填充回 model里面
         // PS2: SnowId 可以通过SnowIdUtils 里面的方法反向获取到 Date,分表时可能会有关
         this.insertSE.by(demo);
@@ -87,4 +82,43 @@
         // 批量查找替换(将memo字段里面的old改为new)
         this.updateSE.updatesReplace(ids, Demo::getMemo, "old", "new");
         this.updateSE.updatesReplace(updateQuery, Demo::getMemo, "old", "new");
-```
+    }
+
+}
+
+@Data
+@AllArgsConstructor
+@DBTable("demo")
+class Demo {
+    /**
+     * id
+     */
+    @DBTableId(strategy = PrimaryKeyStrategy.SnowId)
+    private Long id;
+    /**
+     * name
+     */
+    private String name;
+    /**
+     * 是否启用
+     */
+    private Boolean enabled;
+    /**
+     * 描述
+     */
+    private String memo;
+    /**
+     * 更新时间
+     */
+    private LocalDateTime updateTime;
+    /**
+     * 版本号
+     */
+    private Integer version;
+}
+
+@Data
+class DemoVO {
+    private Long id;
+    private String name;
+}

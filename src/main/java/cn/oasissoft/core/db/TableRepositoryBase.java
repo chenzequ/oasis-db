@@ -4,7 +4,6 @@ import cn.oasissoft.core.db.config.RepositoryConfigParams;
 import cn.oasissoft.core.db.executor.write.DeleteSqlExecutor;
 import cn.oasissoft.core.db.executor.write.InsertSqlExecutor;
 import cn.oasissoft.core.db.executor.write.UpdateSqlExecutor;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /**
  * 表仓储基类
