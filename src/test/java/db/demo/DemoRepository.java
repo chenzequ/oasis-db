@@ -84,6 +84,59 @@ public class DemoRepository extends TableRepositoryBase<Demo, Long> {
         this.updateSE.updatesReplace(updateQuery, Demo::getMemo, "old", "new");
     }
 
+    public void doQuery() {
+
+        DbQueryBuilder
+                // => version=1
+                .and(Demo::getVersion).eq(1)
+                // => version<>1
+                .and(Demo::getVersion).notEq(1)
+                // => version>1
+                .and(Demo::getVersion).greatThan(1)
+                // => version>=1
+                .and(Demo::getVersion).greatThanEq(1)
+                // => version<1
+                .and(Demo::getVersion).lessThan(1)
+                // => version<=1
+                .and(Demo::getVersion).lessThanEq(1)
+                // => name LIKE '%hello%'
+                .and(Demo::getName).like("hello")
+                // => name NOT LIKE '%hello%'
+                .and(Demo::getName).notLike("hello")
+                // => name LIKE 'hello%'
+                .and(Demo::getName).leftLike("hello")
+                // => name LIKE '%hello'
+                .and(Demo::getName).rightLike("hello")
+                // => version BETWEEN (1,10)
+                .and(Demo::getVersion).between(1, 10)
+                // => version NOT BETWEEN (1,10)
+                .and(Demo::getVersion).notBetween(1, 10)
+                // => version IN (1,2,3,4)
+                .and(Demo::getVersion).in(new Object[]{1, 2, 3, 4})
+                // => version NOT IN (1,2,3,4)
+                .and(Demo::getVersion).notIn(new Object[]{1, 2, 3, 4})
+                // => version IS NULL
+                .and(Demo::getVersion).isNull()
+                // => version IS NOT NULL
+                .and(Demo::getVersion).isNotNull()
+                // OR
+                .or(Demo::getName).eq("or")
+                // order by version asc
+                .orderAsc(Demo::getVersion)
+                // order by version desc
+                .orderDesc(Demo::getVersion).build()
+
+        ;
+
+        // 单记录查询
+        Demo model = this.itemSE.toModel(0L);
+        model = this.itemSE.toModel(DbQuery.builderAnd(Demo::getId).eq(0).build());
+        // 锁行查询
+        model = this.itemSE.toModel(0L, true);
+        model = this.itemSE.toModel(DbQuery.builderAnd(Demo::getId).eq(0).build(), true);
+        // 返回部分结果
+//        this.itemSE.toMap()
+    }
 }
 
 @Data
