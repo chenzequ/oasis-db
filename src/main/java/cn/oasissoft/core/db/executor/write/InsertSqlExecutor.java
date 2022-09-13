@@ -104,6 +104,25 @@ public class InsertSqlExecutor<T, K> extends SqlExecutorBase<T, K> {
         return this.batchSave(model, (Set<String>) null);
     }
 
+    /**
+     * 批量插入数据
+     *
+     * @return
+     */
+    public int batchInsert(List<T> model) {
+        // TODO: 待实现
+        throw new RuntimeException("not implement.");
+    }
+
+    public int batchInsert(List<T> model, Set<String> exceptProps) {
+        // TODO: 待实现
+        throw new RuntimeException("not implement.");
+    }
+
+    public int batchInsert(List<T> model, LambdaFunction<T>... exceptProps) {
+        // TODO: 待实现
+        throw new RuntimeException("not implement.");
+    }
 //    /**
 //     * 新增或更新
 //     * 暂不实现:
